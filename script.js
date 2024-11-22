@@ -6,7 +6,7 @@ import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebas
 const firebaseConfig = {
     apiKey: "AIzaSyCloVDvWfwYpd5Bfw60Gn5M1fftm1ikeEQ",
     authDomain: "freeplan-ffce2.firebaseapp.com",
-    databaseURL: "https://freeplan-ffce2-default-rtdb.firebaseio.com/",
+    databaseURL: "https://freeplan-ffce2-default-rtdb.asia-southeast1.firebasedatabase.app/",
     projectId: "freeplan-ffce2",
     storageBucket: "freeplan-ffce2.appspot.com",
     messagingSenderId: "277892113021",
