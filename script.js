@@ -1,14 +1,6 @@
-// Import the Firebase SDKs
+// Import the necessary Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-
-import { getDatabase, goOffline, goOnline } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
-// Manually handle offline and online states
-goOffline(database);  // Call this when you want to force the client to go offline
-goOnline(database);   // Call this when you want to force the client to go online
-
-
-import { getDatabase, ref, set, push, child, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -26,80 +18,47 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Example: Writing data
-try {
-    const messagesRef = ref(database, 'messages');
-    push(messagesRef, {
-        text: "Hello, Firebase!",
-        sender: "User"
-    });
-} catch (error) {
-    console.error("Error writing data: ", error);
-    if (error.message.includes('offline')) {
-        alert("You are offline. Please check your connection.");
-    }
-}
+// Reference to the "messages" node in the Firebase Realtime Database
+const messagesRef = ref(database, "messages");
 
-// Example: Reading data
-const messagesRef = ref(database, 'messages');
-onValue(messagesRef, (snapshot) => {
-    if (snapshot.exists()) {
-        console.log("Messages: ", snapshot.val());
-    } else {
-        console.log("No messages available");
+// Function to send a message to Firebase
+document.getElementById("send-button").addEventListener("click", () => {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value.trim();
+
+    if (message) {
+        try {
+            // Push the new message to Firebase
+            push(messagesRef, {
+                text: message,
+                timestamp: Date.now(),
+                sender: "You" // You can customize this to show the sender's name
+            });
+            messageInput.value = ""; // Clear the input field after sending
+        } catch (error) {
+            console.error("Error writing data: ", error);
+            if (error.message.includes('offline')) {
+                alert("You are offline. Please check your connection.");
+            }
+        }
     }
+});
+
+// Listen for new messages in Firebase Realtime Database
+const messageContainer = document.getElementById("message-container");
+
+// Fetch and display messages in real-time
+onValue(messagesRef, (snapshot) => {
+    messageContainer.innerHTML = ""; // Clear current messages
+    snapshot.forEach(childSnapshot => {
+        const message = childSnapshot.val();
+        const messageElement = document.createElement("div");
+        messageElement.textContent = `${message.sender}: ${message.text}`;
+        messageContainer.appendChild(messageElement);
+    });
 }, (error) => {
     console.error("Error reading data: ", error);
     if (error.message.includes('offline')) {
         alert("You are offline. Please check your connection.");
     }
 });
-
-// Reference to the "messages" node in the Firebase Realtime Database
-const messagesRef = ref(database, "messages");
-
-// Function to send a message
-document.getElementById("send-button").addEventListener("click", () => {
-    const messageInput = document.getElementById("message-input");
-    const message = messageInput.value.trim();
-
-    if (message) {
-        push(messagesRef, {
-            text: message,
-            timestamp: Date.now(),
-            sender: "You" // Customize sender as needed
-        });
-        messageInput.value = ""; // Clear input field after sending
-    }
-});
-
-// Listen for new messages in Firebase Realtime Database
-get(messagesRef)
-  .then((snapshot) => {
-    snapshot.forEach((childSnapshot) => {
-      const message = childSnapshot.val();
-      displayMessage(message);
-    });
-  })
-  .catch((error) => {
-    console.error("Error reading data: ", error);
-  });
-
-// Function to display a message in the chatbox
-function displayMessage(message) {
-    const messageContainer = document.getElementById("message-container");
-
-    const messageElement = document.createElement("div");
-    messageElement.classList.add("message");
-    messageElement.textContent = `${message.sender}: ${message.text}`;
-
-    // Style the message based on the sender
-    if (message.sender === "You") {
-        messageElement.classList.add("message-sent");
-    } else {
-        messageElement.classList.add("message-received");
-    }
-
-    messageContainer.appendChild(messageElement);
-    messageContainer.scrollTop = messageContainer.scrollHeight; // Auto-scroll to latest message
-}
