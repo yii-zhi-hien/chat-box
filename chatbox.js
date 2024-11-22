@@ -28,6 +28,7 @@ let chatBoxShow = false;
 // Open chat modal
 chatWithUsButton.addEventListener("click", () => {
 	if (!chatBoxShow) {
+        chatBoxShow = true;
         chatModal.classList.add("show");
         
         if (roomId == null) {
@@ -39,6 +40,7 @@ chatWithUsButton.addEventListener("click", () => {
         
         listenForMessages(roomId);
     } else {
+        chatBoxShow = false;
         chatModal.classList.remove('show');
         chatWithUsButton.style.display = 'block';
     }
