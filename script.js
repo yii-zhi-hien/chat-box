@@ -1,5 +1,13 @@
 // Import the Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+
+import { getDatabase, goOffline, goOnline } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+// Manually handle offline and online states
+goOffline(database);  // Call this when you want to force the client to go offline
+goOnline(database);   // Call this when you want to force the client to go online
+
+
 import { getDatabase, ref, set, push, child, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Your Firebase configuration
@@ -17,6 +25,35 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+// Example: Writing data
+try {
+    const messagesRef = ref(database, 'messages');
+    push(messagesRef, {
+        text: "Hello, Firebase!",
+        sender: "User"
+    });
+} catch (error) {
+    console.error("Error writing data: ", error);
+    if (error.message.includes('offline')) {
+        alert("You are offline. Please check your connection.");
+    }
+}
+
+// Example: Reading data
+const messagesRef = ref(database, 'messages');
+onValue(messagesRef, (snapshot) => {
+    if (snapshot.exists()) {
+        console.log("Messages: ", snapshot.val());
+    } else {
+        console.log("No messages available");
+    }
+}, (error) => {
+    console.error("Error reading data: ", error);
+    if (error.message.includes('offline')) {
+        alert("You are offline. Please check your connection.");
+    }
+});
 
 // Reference to the "messages" node in the Firebase Realtime Database
 const messagesRef = ref(database, "messages");
