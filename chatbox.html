@@ -56,9 +56,9 @@
 			cursor: pointer;
 		}
 
-			#send-button:hover {
-				background-color: #0056b3;
-			}
+		#send-button:hover {
+			background-color: #0056b3;
+		}
 
 		#chat-modal {
 			display: none;
@@ -73,19 +73,43 @@
 			z-index: 1000;
 		}
 
-			#chat-modal.show {
-				display: block;
-			}
+		#chat-modal.show {
+			display: block;
+		}
 
+		/* Flexbox for positioning buttons in the same row */
+		#chat-modal-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		#minimize-button,
 		#close-modal {
-			position: absolute;
-			top: 10px;
-			right: 10px;
+			padding: 10px;
+			border: none;
+			cursor: pointer;
+		}
+
+		#minimize-button {
 			text-decoration: underline;
 			color: black;
-			border: none;
-			padding: 10px;
-			cursor: pointer;
+			background-color: transparent;
+		}
+
+		#minimize-button:hover {
+			background-color: #e68a00;
+		}
+
+		#close-modal {
+			text-decoration: underline;
+			color: black;
+			background-color: transparent;
+		}
+
+		#close-modal:hover {
+			background-color: #e68a00;
 		}
 
 		#open-chat-button {
@@ -97,9 +121,9 @@
 			cursor: pointer;
 		}
 
-			#open-chat-button:hover {
-				background-color: #0056b3;
-			}
+		#open-chat-button:hover {
+			background-color: #0056b3;
+		}
 
 		#chatWithUsButton {
 			position: fixed;
@@ -115,25 +139,9 @@
 			z-index: 1000;
 		}
 
-			#chatWithUsButton:hover {
-				background-color: #0056b3;
-			}
-
-		#minimize-button {
-			position: absolute;
-			bottom: 10px;
-			right: 70px;
-			padding: 10px;
-            text-decoration: underline;
-			color: Black;
-			border: none;
-			border-radius: 4px;
-			cursor: pointer;
+		#chatWithUsButton:hover {
+			background-color: #0056b3;
 		}
-
-			#minimize-button:hover {
-				background-color: #e68a00;
-			}
 
 		#restore-button {
 			position: absolute;
@@ -147,22 +155,25 @@
 			cursor: pointer;
 		}
 
-			#restore-button:hover {
-				background-color: #0056b3;
-			}
+		#restore-button:hover {
+			background-color: #0056b3;
+		}
 	</style>
 </head>
 <body>
 	<button id="chatWithUsButton">Chat with Us</button>
 
 	<div id="chat-modal">
-        <button id="minimize-button">Minimize</button>
-		<button id="close-modal">Close</button>
+		<!-- Chat modal header with Minimize and Close buttons -->
+		<div id="chat-modal-header">
+			<button id="minimize-button">Minimize</button>
+			<button id="close-modal">Close</button>
+		</div>
 		<div id="messages"></div>
 		<input type="text" id="chat-input" placeholder="Type a message..." />
 		<button id="send-button">Send</button>
-		
 	</div>
+
 	<script type="module" src="chatbox.js"></script>
 </body>
 </html>
