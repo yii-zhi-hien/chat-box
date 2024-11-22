@@ -66,6 +66,7 @@ chatInput.addEventListener("keydown", (event) => {
 });
 
 minimizeButton.addEventListener('click', () => {
+    chatBoxShow = false;
 	chatModal.classList.remove('show');
 	chatWithUsButton.style.display = 'block';
 });
