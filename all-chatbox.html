@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+    }
+
+    .panel {
+      border: 1px solid #ddd;
+      overflow-y: auto;
+    }
+
+    .chat-rooms {
+      width: 25%;
+    }
+
+    .chat-container {
+      width: 75%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .messages-panel {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    .input-panel {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: #fff;
+    }
+
+    .message-input {
+      flex: 1;
+      padding: 5px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .send-button {
+      margin-left: 10px;
+      padding: 5px 15px;
+      font-size: 1rem;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .send-button:hover {
+      background-color: #0056b3;
+    }
+
+    .chat-room-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      text-align: left;
+      border: none;
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .chat-room-btn:hover {
+      background-color: #ddd;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCloVDvWfwYpd5Bfw60Gn5M1fftm1ikeEQ",
+      authDomain: "freeplan-ffce2.firebaseapp.com",
+      databaseURL: "https://freeplan-ffce2-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "freeplan-ffce2",
+      storageBucket: "freeplan-ffce2.appspot.com",
+      messagingSenderId: "277892113021",
+      appId: "1:277892113021:web:3933c7816f0674c1658714",
+      measurementId: "G-9MQ2T1P7W9",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const chatRoomsPanel = document.querySelector(".chat-rooms");
+    const messagesPanel = document.querySelector(".messages-panel");
+    const messageInput = document.querySelector(".message-input");
+    const sendButton = document.querySelector(".send-button");
+
+    let currentRoomId = null;
+
+    function loadChatRooms() {
+      const chatRoomsRef = ref(database, "chatRooms");
+      onValue(chatRoomsRef, (snapshot) => {
+        chatRoomsPanel.innerHTML = ""; 
+        snapshot.forEach((childSnapshot) => {
+          const roomId = childSnapshot.key;
+          const button = document.createElement("button");
+          
+          button.textContent = roomId;
+          button.classList.add("chat-room-btn");
+          button.onclick = () => loadMessagesForRoom(roomId);
+          chatRoomsPanel.appendChild(button);
+        });
+      });
+    }
+
+    function loadMessagesForRoom(roomId) {
+      currentRoomId = roomId;
+      const messagesRef = ref(database, `chatRooms/${roomId}/messages`);
+
+      onValue(messagesRef, (snapshot) => {
+        messagesPanel.innerHTML = ""; 
+        snapshot.forEach((childSnapshot) => {
+          const messageData = childSnapshot.val();
+          const messageElement = document.createElement("div");
+          messageElement.textContent = `${messageData.timestamp} : ${messageData.message}`;
+          messagesPanel.appendChild(messageElement);
+        });
+
+        messagesPanel.scrollTop = messagesPanel.scrollHeight;
+      });
+    }
+
+    sendButton.onclick = () => {
+      if (currentRoomId && messageInput.value.trim() !== "") {
+        const messagesRef = ref(database, `chatRooms/${currentRoomId}/messages`);
+        const newMessage = {
+          type: "admin", 
+          message: messageInput.value,
+          timestamp: new Date().toLocaleString(),
+        };
+
+        push(messagesRef, newMessage);
+        messageInput.value = "";
+      } else {
+        alert("Please select a room and type a message!");
+      }
+    };
+
+    loadChatRooms();
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div class="panel chat-rooms"></div>
+    <div class="chat-container">
+      <div class="panel messages-panel"></div>
+      <div class="input-panel">
+        <input type="text" class="message-input" placeholder="Type your message..." />
+        <button class="send-button">Send</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
