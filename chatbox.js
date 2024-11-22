@@ -36,9 +36,9 @@ chatWithUsButton.addEventListener("click", () => {
             const roomRef = ref(database, `chatRooms/${roomId}`);
             set(roomRef, { createdAt: Date.now(), messages: {} });
             console.log("Chat room created:", roomId);
+            
+            listenForMessages(roomId);
         }
-        
-        listenForMessages(roomId);
     } else {
         chatBoxShow = false;
         chatModal.classList.remove('show');
