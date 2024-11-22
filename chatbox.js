@@ -35,6 +35,7 @@ chatWithUsButton.addEventListener("click", () => {
 		set(roomRef, { createdAt: Date.now(), messages: {} });
 		console.log("Chat room created:", roomId);
 	}
+    
 	listenForMessages(roomId);
 });
 
@@ -59,8 +60,7 @@ chatInput.addEventListener("keydown", (event) => {
 
 minimizeButton.addEventListener('click', () => {
 	chatModal.classList.remove('show');
-	chatWithUsButton.style.display = 'block';  // Show the open button when minimized
-	restoreButton.style.display = 'none';  // Hide the restore button
+	chatWithUsButton.style.display = 'block';
 });
 
 function sendMessage() {
