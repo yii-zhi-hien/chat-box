@@ -24,19 +24,24 @@ const chatModal = document.getElementById("chat-modal");
 const minimizeButton = document.getElementById('minimize-button');
 
 let roomId = null;
-
+let chatBoxShow = false;
 // Open chat modal
 chatWithUsButton.addEventListener("click", () => {
-	chatModal.classList.add("show");
-
-	if (roomId == null) {
-		roomId = `room-${Date.now()}`;
-		const roomRef = ref(database, `chatRooms/${roomId}`);
-		set(roomRef, { createdAt: Date.now(), messages: {} });
-		console.log("Chat room created:", roomId);
-	}
-    
-	listenForMessages(roomId);
+	if (!chatBoxShow) {
+        chatModal.classList.add("show");
+        
+        if (roomId == null) {
+            roomId = `room-${Date.now()}`;
+            const roomRef = ref(database, `chatRooms/${roomId}`);
+            set(roomRef, { createdAt: Date.now(), messages: {} });
+            console.log("Chat room created:", roomId);
+        }
+        
+        listenForMessages(roomId);
+    } else {
+        chatModal.classList.remove('show');
+        chatWithUsButton.style.display = 'block';
+    }
 });
 
 // Close chat modal
